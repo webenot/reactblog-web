@@ -11,7 +11,6 @@
     "sourceMap": true,
     "outDir": "./dist/",
     "removeComments": true,
-    "strict": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
     "baseUrl": "./",
@@ -29,7 +28,7 @@
         "../reactblog-web/src/application/*"
       ],
       "Services/*": [
-        "../reactblog-web/application/services/*"
+        "../reactblog-web/src/application/services/*"
       ]
     },
     "allowSyntheticDefaultImports": true,

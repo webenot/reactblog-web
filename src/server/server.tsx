@@ -2,6 +2,14 @@ import path from 'path';
 
 import express from 'express';
 import mustacheExpress from 'mustache-express';
+import React from 'react';
+import { StaticRouter } from 'react-router';
+import { renderRoutes } from 'react-router-config';
+import { renderToString } from 'react-dom/server';
+
+import { PAGES } from 'Application/pages';
+import { Container } from '@reactblog/core/container';
+import { Context } from '@reactblog/ui/context';
 
 const app = express();
 
@@ -17,9 +25,26 @@ app.use(express.static(publicPath));
 app.get('/favicon.ico', (req, res) => res.status(500).end());
 
 app.get('*', async (request: express.Request, response: express.Response) => {
-  response.render('index', {
-    body: 'Success',
-  });
+
+  const context: any = {};
+  const container = new Container();
+
+  let body = '';
+
+  try {
+    body = renderToString(
+      <Context.Provider value={container}>
+        <StaticRouter context={context} location={request.url}>
+          {renderRoutes(PAGES)}
+        </StaticRouter>
+      </Context.Provider>
+    )
+  } catch (e) {
+    console.log(e);
+  } finally {
+    container.destroy();
+    response.render('index', { body });
+  }
 });
 
 app.listen(process.env.PORT, () => {

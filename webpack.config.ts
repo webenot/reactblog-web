@@ -16,13 +16,15 @@ const PUBLIC_PATH = path.resolve(DIST_PATH, 'public');
 export const SERVER_PATH = path.resolve(DIST_PATH, 'server');
 
 export const NODE_ENV = process.env.NODE_ENV || 'development';
-export const PORT = parseInt(process.env.PORT || '2016', 0);
+export const PORT = parseInt(process.env.PORT || '8016', 0);
+
 
 const config = {
   context: SRC_PATH,
   mode: NODE_ENV,
   watch: NODE_ENV === 'development',
   module: {
+    // @ts-ignore
     rules: [],
   },
   optimization: {
