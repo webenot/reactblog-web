@@ -10,6 +10,8 @@ import { renderToString } from 'react-dom/server';
 import { PAGES } from 'Application/pages';
 import { Container } from '@reactblog/core/container';
 import { Context } from '@reactblog/ui/context';
+import { LocationService } from '@reactblog/ui/services/location.service';
+import { DataService } from '@reactblog/ui/services/data.service';
 
 const app = express();
 
@@ -29,6 +31,15 @@ app.get('*', async (request: express.Request, response: express.Response) => {
   const context: any = {};
   const container = new Container();
 
+  const locationService = container.get<LocationService>(LocationService);
+  locationService.handleChangeLocation({
+    pathname: request.path,
+    search: request.originalUrl.replace(request.path, ''),
+  });
+
+  const dataService = container.get<DataService>(DataService);
+  await dataService.load(PAGES);
+
   let body = '';
 
   try {
@@ -37,8 +48,8 @@ app.get('*', async (request: express.Request, response: express.Response) => {
         <StaticRouter context={context} location={request.url}>
           {renderRoutes(PAGES)}
         </StaticRouter>
-      </Context.Provider>
-    )
+      </Context.Provider>,
+    );
   } catch (e) {
     console.log(e);
   } finally {

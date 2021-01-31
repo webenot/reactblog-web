@@ -1,17 +1,26 @@
 import React, { Component } from 'react';
 
-import { ApiService } from '@reactblog/ui/services/api.service';
+import { MetaService } from 'Services/meta.service';
 import { resolve } from '@reactblog/core/annotations';
-import { DI } from '@reactblog/ui/annotations';
+import { DI, load } from '@reactblog/ui/annotations';
 
 @DI
 export class MainPage extends Component {
 
   @resolve
-  private readonly apiService: ApiService | undefined;
+  private readonly metaService: MetaService | undefined;
+
+  @load('BROWSER')
+  async load () {
+    await this.metaService.loadMeta('BROWSER');
+  }
+
+  @load('SERVER')
+  async loadData () {
+    await this.metaService.loadMeta('SERVER');
+  }
 
   render () {
-    console.log(this.apiService.get('/'));
     return (
       <div>Some text from main page</div>
     );
