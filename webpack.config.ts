@@ -27,6 +27,9 @@ const config = {
     // @ts-ignore
     rules: [],
   },
+  watchOptions: {
+    poll: true,
+  },
   optimization: {
     splitChunks: {
       cacheGroups: {

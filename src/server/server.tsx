@@ -12,6 +12,10 @@ import { Container } from '@reactblog/core/container';
 import { Context } from '@reactblog/ui/context';
 import { LocationService } from '@reactblog/ui/services/location.service';
 import { DataService } from '@reactblog/ui/services/data.service';
+import { RedisDatabusService } from '@reactblog/node/services/redis-databus.service';
+import { DatabusService } from '@reactblog/node/services/abstracts/databus.service';
+import { ApiService } from '@reactblog/ui/services/api.service';
+import { ApiSsrService } from '@reactblog/ui/services/api-ssr.service';
 
 const app = express();
 
@@ -26,18 +30,26 @@ app.use(express.static(publicPath));
 
 app.get('/favicon.ico', (req, res) => res.status(500).end());
 
+Container.set(DatabusService, () => new RedisDatabusService('WEB'));
+Container.set(ApiService, () => new ApiSsrService());
+
+const container = Container.getContext();
+const redisDatabusService = container.get<RedisDatabusService>(DatabusService);
+redisDatabusService.listen();
+
 app.get('*', async (request: express.Request, response: express.Response) => {
 
   const context: any = {};
-  const container = new Container();
 
-  const locationService = container.get<LocationService>(LocationService);
+  const session = new Container();
+
+  const locationService = session.get<LocationService>(LocationService);
   locationService.handleChangeLocation({
     pathname: request.path,
     search: request.originalUrl.replace(request.path, ''),
   });
 
-  const dataService = container.get<DataService>(DataService);
+  const dataService = session.get<DataService>(DataService);
   await dataService.load(PAGES);
 
   let body = '';

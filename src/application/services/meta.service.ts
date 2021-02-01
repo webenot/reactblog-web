@@ -5,10 +5,12 @@ import { ApiService } from '@reactblog/ui/services/api.service';
 export class MetaService {
 
   @resolve
-  private readonly apiService: ApiService | undefined;
+  private readonly apiService: ApiService;
 
   async loadMeta (type: string) {
-    console.log(type);
-    await this.apiService.get('/seo/meta');
+    const result = await this.apiService.get('/seo', { q: type });
+    console.log('-----------------------------');
+    console.log(result);
+    console.log('-----------------------------');
   }
 }
